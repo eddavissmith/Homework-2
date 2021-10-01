@@ -1,0 +1,560 @@
+//============================================================================
+// Name        : student.cpp
+// Author      : Eric Davis Smith
+// Version     : assignment 2
+// type        : complier
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <istream>
+#include <map>
+#include <fstream>
+
+
+
+
+using namespace std;
+
+class LexAnalyzer{
+private:
+	vector<string> lexemes;  // source code file lexemes
+	vector<string> tokens;   // source code file tokens
+	map<string, string> tokenmap;  // valid lexeme/token pairs
+
+	                             // other private method s c
+public:
+
+void Lex(istream& infile){
+
+          string input1;
+          string input2;
+		  infile >> input1 >> input2;
+	      while (!infile.eof()){
+        	   tokenmap[input2] = input1;
+        	   infile >> input1 >> input2;
+
+	      }
+	      map<string,string> :: iterator mitr;
+	      for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++ mitr){
+	    	  cout << mitr -> first << " " << mitr-> second << endl;
+	      }
+
+}
+void scanFile(istream& infile, ostream& outfile){
+// pre: 1st parameter refers to an open text file that contains source
+// code in the language, 2nd parameter refers to an open empty output
+// file
+// post: If no error, the token and lexeme pairs for the given input
+// file have been written to the output file and the vectors have been // populated.  If there is an error, incomplete token/lexeme pairs are
+// written to the output file and populated in the vectors.  An error // message is also written to the file. A success or fail message has // printed to the console.
+	string lex = "";
+	vector<char> currentL;
+	string key;
+	char currentC, nextC;
+
+	currentC = infile.get();
+	nextC = infile.get();
+	if(isdigit(currentC)){
+		    	while(isdigit(nextC)){
+		    		currentC = infile.get();
+		    		currentL.push_back(currentC);
+		    		nextC = infile.peek();
+		    }
+		        for(int i = 0;i < currentL.size(); i++){
+		        	lex = lex + currentL[i];
+		        }
+		       lexemes.push_back(lex);
+		       tokens.push_back("t_int");
+		       map<string, string> :: iterator mitr;
+		       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+		       	    	if(mitr->first == lex){
+		       	    		tokens.push_back(tokenmap[lex]);
+		       	    	}
+		       	    	else{
+		       	    		tokens.push_back("t_int");
+		       	    	}
+		    }
+
+		 }
+	    else  if(isalpha(currentC)){                             //if current char is a-z run loop
+			while(isdigit(nextC) ||isalpha(nextC) ){
+				currentC = infile.get();
+				nextC = infile.peek();
+				currentL.push_back(currentC);
+
+			}
+		    for(int i=0; i<currentL.size();i++){
+		    	lex = lex + currentL[i];
+		    }
+		    lexemes.push_back(lex);
+		    map<string, string> :: iterator mitr;
+
+		    for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+		    	if(mitr->first == lex){
+		    		tokens.push_back(tokenmap[lex]);
+		    	}
+		    	else{
+		    		tokens.push_back("t_id");
+		    	}
+		    }
+		}
+	    else if((currentC)=='('){
+	   	    	while((nextC)=='('){
+	   	    		currentC = infile.get();
+	   	    		currentL.push_back(currentC);
+	   	    		nextC = infile.peek();
+	   	    }
+	   	        for(int i = 0;i < currentL.size(); i++){
+	   	        	lex = lex + currentL[i];
+	   	        }
+	   	       lexemes.push_back(lex);
+	   	       tokens.push_back("s_lparen");
+	   	       map<string, string> :: iterator mitr;
+	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	       	    	if(mitr->first == lex){
+	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	       	    	}
+	   	       	    	else{
+	   	       	    		tokens.push_back("L_paren");
+	   	       	    	}
+	   	    }
+
+   }
+	    else if((currentC)==')'){
+	    	   	    	while((nextC)==')'){
+	    	   	    		currentC = infile.get();
+	    	   	    		currentL.push_back(currentC);
+	    	   	    		nextC = infile.peek();
+	    	   	    }
+	    	   	        for(int i = 0;i < currentL.size(); i++){
+	    	   	        	lex = lex + currentL[i];
+	    	   	        }
+	    	   	       lexemes.push_back(lex);
+	    	   	       tokens.push_back("s_rparen");
+	    	   	       map<string, string> :: iterator mitr;
+	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	    	   	       	    	if(mitr->first == lex){
+	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	    	   	       	    	}
+	    	   	       	    	else{
+	    	   	       	    		tokens.push_back("R_paren");
+	    	   	       	    	}
+	    	   	    }
+
+	       }
+	    else if((currentC)==';'){
+	    	   	    	while((nextC)==';'){
+	    	   	    		currentC = infile.get();
+	    	   	    		currentL.push_back(currentC);
+	    	   	    		nextC = infile.peek();
+	    	   	    }
+	    	   	        for(int i = 0;i < currentL.size(); i++){
+	    	   	        	lex = lex + currentL[i];
+	    	   	        }
+	    	   	       lexemes.push_back(lex);
+	    	   	       tokens.push_back("s_semi");
+	    	   	       map<string, string> :: iterator mitr;
+	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	    	   	       	    	if(mitr->first == lex){
+	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	    	   	       	    	}
+	    	   	       	    	else{
+	    	   	       	    		tokens.push_back("s_semi");
+	    	   	       	    	}
+	    	   	    }
+
+	       }
+	    else if((currentC)==','){
+	   	    	   	    	while((nextC)==','){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_comma");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_comma");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+
+	    else if((currentC)=='<'){
+	   	    	   	    	while((nextC)=='<'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_lt");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_lt");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='>'){
+	   	    	   	    	while((nextC)=='>'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_gt");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_gt");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='<='){
+	   	    	   	    	while((nextC)==';'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_le");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_le");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='>='){
+	   	    	   	    	while((nextC)=='>='){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_ge");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_ge");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='=='){
+	   	    	   	    	while((nextC)=='=='){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_eq");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_eq");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='!='){
+	   	    	   	    	while((nextC)=='!='){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_ne");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_ne");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='+'){
+	   	    	   	    	while((nextC)=='+'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_plus");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_plus");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='-'){
+	   	    	   	    	while((nextC)=='-'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_minus");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_minus");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='*'){
+	   	    	   	    	while((nextC)=='*'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_mult");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_mult");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='/'){
+	   	    	   	    	while((nextC)=='/'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_div");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_div");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='%'){
+	   	    	   	    	while((nextC)=='%'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_mod");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_mod");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='='){
+	   	    	   	    	while((nextC)=='='){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_assign");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_assign");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='&&'){
+	   	    	   	    	while((nextC)==';'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_and");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_and");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='|'){
+	   	    	   	    	while((nextC)=='|'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_or");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_or");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+	    else if((currentC)=='!'){
+	   	    	   	    	while((nextC)=='!'){
+	   	    	   	    		currentC = infile.get();
+	   	    	   	    		currentL.push_back(currentC);
+	   	    	   	    		nextC = infile.peek();
+	   	    	   	    }
+	   	    	   	        for(int i = 0;i < currentL.size(); i++){
+	   	    	   	        	lex = lex + currentL[i];
+	   	    	   	        }
+	   	    	   	       lexemes.push_back(lex);
+	   	    	   	       tokens.push_back("s_not");
+	   	    	   	       map<string, string> :: iterator mitr;
+	   	    	   	       for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++mitr ){
+	   	    	   	       	    	if(mitr->first == lex){
+	   	    	   	       	    		tokens.push_back(tokenmap[lex]);
+	   	    	   	       	    	}
+	   	    	   	       	    	else{
+	   	    	   	       	    		tokens.push_back("s_not");
+	   	    	   	       	    	}
+	   	    	   	    }
+
+	   	       }
+    void readInto( istream outfile){
+    	
+    }
+
+
+}
+};
+int main(){
+	LexAnalyzer a;
+
+	string tFile;
+	cout << "enter the name of the token/lexeme file:";
+    cin >> tFile;
+    ifstream infile(tFile);
+
+    if(!infile){
+    	cout<< "file was not found" << endl;
+    	exit(-1);
+    }
+
+    a.Lex(infile);
+
+    string sFile;
+    cout << "enter the source file: ";
+    cin >> sFile;
+    ifstream inSource(sFile);
+
+    string oFile;
+    cout << "Enter output file:";
+    cin>> oFile;
+    
+    ofstream outputFile(oFile);
+
+    a.scanFile(inSource, outputFile);
+
+    return 0;
+}
