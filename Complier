@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : student.cpp
+// Name        : complier.cpp
 // Author      : Eric Davis Smith
 // Version     : assignment 2
 // type        : complier
@@ -30,16 +30,16 @@ public:
 
 void Lex(istream& infile){
 
-          string input1;
+          string input1;          // create two strings to hold the lexeme and token
           string input2;
-		  infile >> input1 >> input2;
-	      while (!infile.eof()){
-        	   tokenmap[input2] = input1;
+		  infile >> input1 >> input2;   // save both values
+	      while (!infile.eof()){        // while file is not empty
+        	   tokenmap[input2] = input1;      
         	   infile >> input1 >> input2;
 
 	      }
-	      map<string,string> :: iterator mitr;
-	      for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++ mitr){
+	      map<string,string> :: iterator mitr;       //create map and use iterator
+	      for(mitr = tokenmap.begin(); mitr != tokenmap.end(); ++ mitr){    
 	    	  cout << mitr -> first << " " << mitr-> second << endl;
 	      }
 
@@ -53,13 +53,13 @@ void scanFile(istream& infile, ostream& outfile){
 // written to the output file and populated in the vectors.  An error // message is also written to the file. A success or fail message has // printed to the console.
 	string lex = "";
 	vector<char> currentL;
-	string key;
-	char currentC, nextC;
 
+	char currentC, nextC;
 	currentC = infile.get();
 	nextC = infile.get();
-	if(isdigit(currentC)){
-		    	while(isdigit(nextC)){
+	if(isdigit(currentC)){                            // used to check if current char is a digit
+
+		    	while(isdigit(nextC)){                // used to check if there is  another digit
 		    		currentC = infile.get();
 		    		currentL.push_back(currentC);
 		    		nextC = infile.peek();
@@ -521,24 +521,22 @@ void scanFile(istream& infile, ostream& outfile){
 	   	    	   	    }
 
 	   	       }
-    void readInto( istream outfile){
-    	
-    }
+
 
 
 }
 };
 int main(){
-	LexAnalyzer a;
+	LexAnalyzer a;                                       // inizalize the Lex Analyzer
 
 	string tFile;
-	cout << "enter the name of the token/lexeme file:";
+	cout << "enter the name of the token/lexeme file:";  //promt user to enter token/lexeme file
     cin >> tFile;
     ifstream infile(tFile);
 
-    if(!infile){
+    if(!infile){                                         //if file is not found end
     	cout<< "file was not found" << endl;
-    	exit(-1);
+
     }
 
     a.Lex(infile);
@@ -551,10 +549,17 @@ int main(){
     string oFile;
     cout << "Enter output file:";
     cin>> oFile;
-    
+
     ofstream outputFile(oFile);
 
     a.scanFile(inSource, outputFile);
 
     return 0;
 }
+
+
+
+
+
+
+
